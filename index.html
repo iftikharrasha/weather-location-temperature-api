@@ -22,19 +22,58 @@
     <div class="container">
         <form class="col-md-6 m-auto py-5">
             <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Enter a location for Weather ...">
+                <input id="search-name" type="text" class="form-control" placeholder="Enter a location for Weather ...">
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-danger">Search</button>
+                    <button id="submit-btn" type="button" class="btn btn-danger">Search</button>
                 </div>
             </div>
         </form>
         <div class="weather-status text-white text-center">
-            <img src="https://openweathermap.org/img/wn/02d@2x.png" alt="">
-            <h1>Dhaka</h1>
-            <h3><span>38.06</span>&deg;C</h3>
-            <h1 class="lead">Clouds</h1>
+            <img id="show-icon" src="" alt="icon">
+            <!-- <p id="show-desc"></p> -->
+            <h1 id="city-name"></h1>
+            <h3><span id="show-temp"></span>&deg;C</h3>
+            <h4 id="show-status" class="lead">Clouds</h4>
         </div>
     </div>
 
+    <script>
+            window.onload = function () {
+                getWeather('Dhaka');
+            };
+
+            const apiKey = 'f01661f5ec7c16ffa55f7a47d3d5f4d9';
+            const submitBtn = document.getElementById('submit-btn');
+            const getCityName = document.getElementById('search-name');
+
+            submitBtn.addEventListener('click', function () {
+                const cityValue = getCityName.value;
+                getCityName.value = '';
+                getWeather(cityValue);
+            });
+
+            function getWeather(city) {
+                fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`)
+                .then(res => res.json())
+                .then(data => {
+                    // console.log(data.main.temp);
+                    let showCelcius = (data.main.temp) - 273.15;
+                    let celcius = showCelcius.toFixed(2);
+                    document.getElementById('show-temp').innerText = celcius;
+                    console.log(celcius);
+
+                    document.getElementById('city-name').innerText = city;
+
+                    let showStatus = data.weather[0].main;
+                    document.getElementById('show-status').innerText = showStatus;
+
+                    // let showDesc = data.weather[0].description;
+                    // document.getElementById('show-desc').textContent = showDesc;
+
+                    let showIcon = data.weather[0].icon;
+                    document.getElementById('show-icon').src = `http://openweathermap.org/img/wn/${showIcon}@2x.png`;
+                });
+            }
+    </script>
 </body>
 </html>
